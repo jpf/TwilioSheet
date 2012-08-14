@@ -1,53 +1,105 @@
-from pyquery import PyQuery as pq
-import urllib
-import re
 import os
-from flask import Flask, request
+from flask import Flask, request, render_template, url_for, redirect
+from gform import GForm
+import urlparse
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-@app.route("/")
-def note():
-    return "Send SMSes to the /form route"
+# TO DO:
+#   Given a public URL, give a Twilio URL
+#   SentFromIP:     IP address that sent the request to this script
 
-@app.route("/form/<form_key>", methods=['GET', 'POST'])
-def form(form_key):
-    form_url = "https://docs.google.com/a/twilio.com/spreadsheet/viewform?formkey=%s" % form_key
-    d = pq(url=form_url)
-    form = d('#ss-form')
-    entries = d.find('div.ss-form-entry')
-    # I should really pull these from the form directly
-    parameters = {'pageNumber': '0',
-                  'backupCache': '',
-                  'submit': 'Submit'}
+twilio_parameters = set(['SmsSid', 'AccountSid', 'From', 'To', 'Body',
+                         'FromCity', 'FromState', 'FromZip', 'FromCountry', 'ToCity', 'ToState', 'ToZip', 'ToCountry'])
 
-    for div in entries:
-        elements = list(div)
-        if not elements[0].tag == 'label':
-            continue
-        input_label = elements[0].text.rstrip()
-        input_id    = elements[2].name
+class NoURLException(Exception):
+    pass
+class NoGoogleInURLException(Exception):
+    pass
+class URLNotForGoogleFormException(Exception):
+    pass
+class URLForGoogleSpreadsheetNotFormException(Exception):
+    pass
+class GoogleFormDoesntExistException(Exception):
+    pass
+class NoTwilioParametersInFormException(Exception):
+    pass
+
+class TestURL:
+    def __init__(self, url):
+        self.parameters = None
+        self.message = ""
+        self.url = url
+        parsed_url = urlparse.urlparse(url)
+        if not "http" in parsed_url.scheme:
+            raise NoURLException("No input, expected URL.")
+        if not "google.com" in parsed_url.netloc:
+            raise NoGoogleInURLException("Input URL must contain 'google.com'.")
+        query = urlparse.parse_qs(parsed_url.query)
+        if query and 'key' in query:
+            raise URLForGoogleSpreadsheetNotFormException("URL appears to be for a spreadsheet, URL must be for a form.")
+        if not query or not 'formkey' in query:
+            raise URLNotForGoogleFormException("Input URL must contain 'formkey' query parameter.")
+        self.formkey = query['formkey'][0]
         try:
-            parameters[input_id] = request.form[input_label]
+            gform = GForm(self.formkey)
         except:
-            pass
+            raise GoogleFormDoesntExistException("Error form at URL, does the URL exist and point to a form?")
+        intersection = twilio_parameters.intersection(gform.labels)
+        if intersection == set():
+            raise NoTwilioParametersInFormException("Form at URL must contain at least one input with a label that matches a Twilio parameter.")
+        self.parameters = intersection
 
-    print request.form
-    print parameters
-    # form_input
+# TODO: Add to template: "Send SMSes to the /form route"
+@app.route("/")
+def index():
+    return render_template('base.html', state="nothing-submitted")
 
-    print "action=%s" % form.attr['action']
-    google_form = form.attr['action']
+@app.route("/submit", methods=['GET', 'POST'])
+def submit():
+    if request.method == 'GET':
+        return redirect(url_for('index'))
 
-    f = urllib.urlopen(google_form, urllib.urlencode(parameters))
-    result = f.read()
-    if re.search(r'Create your own form', result):
-        message = "Submitted successfully!"
-        print message
-        return message
-    message = "Error submitting to form."
-    print message
-    return message
+    valid = False
+    message = ''
+    form = None
+    try:
+        form = TestURL(request.form['url'])
+        message = "Looks good! Here is what type of data we will be sending to your spreadsheet:"
+        valid = True
+        sms_request_url = url_for('form', formkey=form.formkey, _external=True)
+    except NoURLException:
+        message = "Input needs to be a URL."
+    except NoGoogleInURLException:
+        message = "URL needs to be for a Google Form."
+    except URLNotForGoogleFormException:
+        message = "URL needs to be for a live Google Form."
+    except URLForGoogleSpreadsheetNotFormException:
+        message = "That URL appears to be for a Google Spreadsheet, it needs to be for a Google Form."
+    except GoogleFormDoesntExistException:
+        message = "That form doesn't seem to exist."
+    except NoTwilioParametersInFormException:
+        message = "Form has no inputs named after Twilio paramaters."
+    except:
+        message = "Well, this is embarassing, something went wrong. Perhaps you can try again?"
+    if valid:
+        # Generate the URL that they need to paste on Twilio
+        return render_template('base.html', message=message, state="valid-submission", url=form.url, parameters_found=form.parameters, sms_request_url=sms_request_url)
+    else:
+        return render_template('base.html', message=message, state="error", url=request.form['url'])
+
+# https://docs.google.com/spreadsheet/viewform?formkey=aBCdEfG0hIJkLM1NoPQRStuvwxYZAbc2DE#git=0
+@app.route("/form/<formkey>", methods=['GET', 'POST'])
+def form(formkey):
+    gform = GForm(formkey)
+
+    # I could probably re-implement this with fewer lines using sets
+    for key in request.form:
+        if key in gform.labels:
+            name = gform.labels[key]
+            gform.parameters[name] = request.form[key]
+
+    return gform.submit()
 
 if __name__ == "__main__":
     # Bind to PORT if defined, otherwise default to 5000.
