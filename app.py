@@ -69,17 +69,17 @@ def submit():
         valid = True
         sms_request_url = url_for('form', formkey=form.formkey, _external=True)
     except NoURLException:
-        message = "Input needs to be a URL."
+        message = 'No URL entered. Maybe you just pressed the "Submit" button without pasting a URL in the input field above?'
     except NoGoogleInURLException:
-        message = "URL needs to be for a Google Form."
+        message = "There was a problem with the URL, are you sure that you entered the URL for a Google Form?"
     except URLNotForGoogleFormException:
-        message = "URL needs to be for a live Google Form."
+        message = 'There was a problem with the URL, are you sure that you entered the URL for a "live" Google Form?'
     except URLForGoogleSpreadsheetNotFormException:
         message = "That URL appears to be for a Google Spreadsheet, it needs to be for a Google Form."
     except GoogleFormDoesntExistException:
-        message = "That form doesn't seem to exist."
+        message = "The URL you entered looks like a valid URL for a Google Form, I'm just having trouble validating it. Perhaps you entered the URL for an example form?"
     except NoTwilioParametersInFormException:
-        message = "Form has no inputs named after Twilio paramaters."
+        message = "The URL you entered looks like a valid Google Form, but it doesn't have any inputs that would be filled out with Twilio data. Update your form to accept at least one Twilio parameter and try again."
     except:
         message = "Well, this is embarassing, something went wrong. Perhaps you can try again?"
     if valid:
