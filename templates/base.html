@@ -70,28 +70,12 @@
 	<h1>Receive Twilio SMS messages in a Google Spreadsheet</h1>
 	<p>Use Twilio and Google Spreadsheets to build your own
 	applications to do SMS polling, SMS voting, keyword marketing,
-	expense tracking, time tracking, and more.<br/> No programming experience
-	required.</p>
-      <img src="/static/img/twiliosheet-example.png" />
-      <h2>Get Started</h2>
-      <ol>
-      <li><a href="http://support.google.com/docs/bin/answer.py?hl=en&answer=87809">Create a Google Spreadsheet</a>:<br/><img src="/static/img/1-create-spreadsheet.png" /></li>
-      <li>Name the spreadsheet "TwilioSheet" (or any name of your choosing)</li>
-      <li>Add "SmsSid", "To", "From", and "Body" to the first line in your new spreadsheet 
-          (<a href="http://www.twilio.com/docs/api/twiml/sms/twilio_request">other parameters are avaiable as well</a>):
-	  <br/><img src="/static/img/2-name-first-row.png" /></li>
-      <li>Click on the "Tools" menu, then click "Create a form":<br/><img src="/static/img/3-create-a-form.png" /></li>
-      <li>A window will open.</li>
-      <li>Type "Testing" in the box that says "You can include any text or info that will help people fill this out."</li>
-      <li>Click "Save"</li>
-      <li>Click on the URL at the bottom of the window.<br/><img src="/static/img/4-save-form.png" /></li>
-      <li>Another window will open. Copy the URL from the location bar of that window:<br/><img src="/static/img/5-copy-url.png" /></li>
-      <li>Paste that URL into the box at the top of this page and click the "Submit" button</li>
-      </ol>
+	expense tracking, time tracking, and more.</p>
+      <p>Need help? <a href="https://github.com/jpf/Twilio-SMS-to-Google-Form/blob/master/README.md">See here for instructions</a></p>
       {% elif state == 'error' %}
       {{ message }}
       <br/><br/>
-      Maybe another look at <a href="/">the instructions</a> would help?
+      Maybe another look at <a href="https://github.com/jpf/Twilio-SMS-to-Google-Form/blob/master/README.md">the instructions</a> would help?
       {% elif state == 'valid-submission' %}
       <h2>It worked!</h2>
       <p>You're almost done.</p>
@@ -102,23 +86,8 @@
 	<li>{{ parameter }}</li>
       {% endfor %}
       </ul>
-      <b>In another window:</b>
-      <ol>
-        <li>Log in to your Twilio account.</li>
-	<li>Go to the "Numbers" section of your Twilio account
-	    (<a href="https://www.twilio.com/user/account/phone-numbers/incoming">or click here</a>)</li>
-	<li>Click on the number you want to set up to send SMS data to your Google Spreadsheet.</li>
-	<li>Copy this URL:<br/> <input type="text" class="span8" value="{{sms_request_url}}" /></li>
-	<li>Paste the URL in the step above into the "SMS Request URL" box.</li>
-	<li>Click the "Save Changes" button.<br/><img src="/static/img/6-paste-url.png"/></li>
-	<li>Send a text message to the number you just set up. </li>
-      </ol>
-      <b>In your Google Spreadsheet:</b>
-	<li>You should see your text message show up, live, in your
-	Google Spreadsheet in about 5-10 seconds</li>
-	<li>Start writing formulas to process the incomming text
-	messages.</li>
-      </ol>
+      
+      Use this URL as the "SMS Request URL" for your Twilio number:<br/> <input type="text" class="span8" value="{{sms_request_url}}" />
     {% endif %}
     </div> <!-- /container -->
 
