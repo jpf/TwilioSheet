@@ -1,7 +1,7 @@
 Receive Twilio SMS messages in a Google Spreadsheet
 ===================================================
 
-Use Twilio and Google Spreadsheets to build your own applications to do SMS polling, SMS voting, keyword marketing, expense tracking, time tracking, and more.
+Use Twilio and Google Spreadsheets to build your own applications to do SMS polling / SMS voting, keyword marketing data collection, expense tracking, time tracking, and more.
 
 No programming experience required.
 
