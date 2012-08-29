@@ -82,7 +82,7 @@ Notes:
     $ source venv/bin/activate
     $ pip install -r requirements
 
-** After setting up virtualenv, this is how you deploy to Heroku**
+**After setting up virtualenv, this is how you deploy to Heroku**
 
     $ heroku create
     $ git push heroku master
