@@ -5,7 +5,13 @@ else:
     import unittest
 
 from app import TestURL
-from app import NoURLException, NoGoogleInURLException, URLNotForGoogleFormException, URLForGoogleSpreadsheetNotFormException, GoogleFormDoesntExistException, NoTwilioParametersInFormException
+from app import NoURLException
+from app import NoGoogleInURLException
+from app import URLNotForGoogleFormException
+from app import URLForGoogleSpreadsheetNotFormException
+from app import GoogleFormDoesntExistException
+from app import NoTwilioParametersInFormException
+
 
 # TODO: Use mocking library to simulate HTTP
 class TestURLTest(unittest.TestCase):
@@ -36,12 +42,13 @@ class TestURLTest(unittest.TestCase):
                 TestURL(url)
 
     def test_form_needs_twilio_parameters(self):
-        url = 'https://docs.google.com/spreadsheet/viewform?formkey=dHk3N2M5NlAtZV9mMlAyOEU5VE05dEE6MQ'
+        url = 'https://docs.google.com/spreadsheet/' \
+              'viewform?formkey=dHk3N2M5NlAtZV9mMlAyOEU5VE05dEE6MQ'
         with self.assertRaises(NoTwilioParametersInFormException):
             TestURL(url)
 
     def test_detects_valid_url(self):
-        url = 'https://docs.google.com/spreadsheet/viewform?formkey=dG02c3hqdEZBaWZMN1NBdnBCZkVzdWc6MQ'
+        url = 'https://docs.google.com/spreadsheet/' \
+              'viewform?formkey=dG02c3hqdEZBaWZMN1NBdnBCZkVzdWc6MQ'
         form = TestURL(url)
         self.assertIsInstance(form.parameters, set)
-

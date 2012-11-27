@@ -5,6 +5,7 @@ else:
     import unittest
 from gform import GForm, GFormException
 
+
 class GFormTest(unittest.TestCase):
 
     def test_true(self):
@@ -31,4 +32,3 @@ class GFormTest(unittest.TestCase):
         except GFormException:
             exception_thrown = True
         self.assertEquals(exception_thrown, True)
-        
