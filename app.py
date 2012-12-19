@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, url_for, redirect
 from gform import GForm
 import urlparse
 app = Flask(__name__)
-app.config['DEBUG'] = True
+# app.config['DEBUG'] = True
 
 # TO DO:
 #   Given a public URL, give a Twilio URL
