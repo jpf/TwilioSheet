@@ -7,6 +7,7 @@ else:
 import app
 import gform
 
+
 # From: http://code.activestate.com/recipes/52256-check-xml-well-formedness/
 def is_xml_like(input):
     if input.startswith('<') and input.endswith('>'):
@@ -15,6 +16,7 @@ def is_xml_like(input):
         print "This does not appear to be XML: '%s'" % input
         return False
 
+
 def mock_urlopen(action_url, parameters):
     class MockUrllib:
         def read(self):
@@ -22,8 +24,10 @@ def mock_urlopen(action_url, parameters):
 
     return MockUrllib()
 
+
 def mock_init(self, string):
     return None
+
 
 class TestFlaskApp(unittest.TestCase):
 
