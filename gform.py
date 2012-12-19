@@ -63,10 +63,9 @@ Error parsing URL '%s', did you pass the correct formkey?""")
            to the Google Form"""
         f = urllib.urlopen(self.action_url, urllib.urlencode(self.parameters))
         form_submission_result = f.read()
+        message = "Error submitting to form."
         if re.search(r'Create your own form', form_submission_result):
             message = "Submitted successfully!"
-            # print message
-            return message
-        message = "Error submitting to form."
-        # print message
-        return message
+        # http://bit.ly/12ySdJQ
+        response = "<Response><!-- %s --></Response>" % message
+        return response
