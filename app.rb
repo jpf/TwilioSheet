@@ -28,6 +28,7 @@ get '/' do
 end
 
 get '/login/google' do
+  # require 'debugger'; debugger
   @google_request_token = @consumer.get_request_token
   session[:google_request_token] = @request_token.token
   session[:google_request_token_secret] = @request_token.secret
