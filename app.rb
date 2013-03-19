@@ -55,8 +55,8 @@ post '/sms/:auth_token/:spreadsheet_key' do
 
   params.delete :spreadsheet_key
   params.delete :auth_token
-  worksheet.list.push params
-  worksheet.list.save
+  worksheet.list.push({'To' => params[:To], 'From' => params[:From], 'Body' => params[:Body]})
+  worksheet.save
 end
 
 get '/auth/google_oauth2/callback' do
