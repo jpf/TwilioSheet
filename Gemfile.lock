@@ -1,6 +1,8 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    dotenv (0.5.0)
+    oauth (0.4.7)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -16,5 +18,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
+  oauth
   shotgun
   sinatra

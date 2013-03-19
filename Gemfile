@@ -1,7 +1,6 @@
 source "http://rubygems.org"
 
 gem 'sinatra'
-
-group :development do
-  gem 'shotgun'
-end
+gem 'shotgun', :groups => [:development]
+gem 'oauth'
+gem 'dotenv', :groups => [:development, :test]
