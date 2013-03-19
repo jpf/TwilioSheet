@@ -25,11 +25,19 @@ end
 
 get '/' do
   if @google_auth
-    @session = GoogleDrive.login_with_oauth @google_auth.credentials.token
-    @session.files.map(&:title).join(',')
+    session[:google] = GoogleDrive.login_with_oauth @google_auth.credentials.token
   else
     redirect '/auth/google_oauth2'
   end
+end
+
+get '/create' do
+  google = session[:google]
+  spreadsheet = google.create_spreadsheet("TwilioSheet")
+  spreadsheet_key = spreadsheet.key()
+  auth_token = @google_auth.credentials.token
+  url = "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}/#{auth_token}/#{spreadsheet_key}"
+  "Use this URL: #{url}"
 end
 
 get '/inspect' do
@@ -39,6 +47,16 @@ end
 
 get '/logout' do
   session[:google_auth] = nil
+end
+
+post '/sms/:auth_token/:spreadsheet_key' do
+  google = GoogleDrive.login_with_oauth params[:auth_token]
+  worksheet = google.spreadsheet_by_key(params[:spreadsheet_key]).worksheets[0]
+
+  params.delete :spreadsheet_key
+  params.delete :auth_token
+  worksheet.list.push params
+  worksheet.list.save
 end
 
 get '/auth/google_oauth2/callback' do
