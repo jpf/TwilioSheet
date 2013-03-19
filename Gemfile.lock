@@ -11,12 +11,18 @@ GEM
     dotenv (0.5.0)
     faraday (0.8.6)
       multipart-post (~> 1.1)
+    google_drive (0.3.4)
+      nokogiri (>= 1.4.4, != 1.5.2, != 1.5.1)
+      oauth (>= 0.3.6)
+      oauth2 (>= 0.5.0)
     hashie (1.2.0)
     httpauth (0.2.0)
     jwt (0.1.8)
       multi_json (>= 1.5)
     multi_json (1.7.1)
     multipart-post (1.2.0)
+    nokogiri (1.5.8)
+    oauth (0.4.7)
     oauth2 (0.8.1)
       faraday (~> 0.8)
       httpauth (~> 0.1)
@@ -49,6 +55,7 @@ PLATFORMS
 DEPENDENCIES
   debugger
   dotenv
+  google_drive
   omniauth-google-oauth2
   shotgun
   sinatra

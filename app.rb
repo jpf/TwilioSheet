@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'omniauth-google-oauth2'
 require 'dotenv'
+require 'google_drive'
 
 Dotenv.load
 configure do
@@ -8,8 +9,14 @@ configure do
   set :session_secret, ENV['SESSION_SECRET']
 end
 
+# FIXME: limit the scope to just what we need (probably userinfo.profile and spreadsheets)
 use OmniAuth::Builder do
-  provider :google_oauth2, ENV["GOOGLE_CLIENT_ID"], ENV["GOOGLE_CLIENT_SECRET"]
+  provider :google_oauth2, ENV["GOOGLE_CLIENT_ID"], ENV["GOOGLE_CLIENT_SECRET"],
+    scope: ["userinfo.email",
+            "userinfo.profile",
+            "https://docs.google.com/feeds/",
+            "http://docs.googleusercontent.com/",
+            "https://spreadsheets.google.com/feeds/"].join(',')
 end
 
 before do
@@ -18,10 +25,20 @@ end
 
 get '/' do
   if @google_auth
-    'Hello world'
+    @session = GoogleDrive.login_with_oauth @google_auth.credentials.token
+    @session.files.map(&:title).join(',')
   else
     redirect '/auth/google_oauth2'
   end
+end
+
+get '/inspect' do
+  content_type 'text/plain'
+  @google_auth.inspect
+end
+
+get '/logout' do
+  session[:google_auth] = nil
 end
 
 get '/auth/google_oauth2/callback' do
