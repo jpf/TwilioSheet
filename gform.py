@@ -21,17 +21,16 @@ class GForm:
     """Dictionary where the 'key' is the label
        for a Google Form input and the 'value' is the input name"""
 
-    def __init__(self, formkey):
+    def __init__(self, formkey, url=None):
         """Given a Google Form 'formkey',
            will parse interesting information from said form."""
-        form_url = "https://docs.google.com/spreadsheet/" \
-                   "viewform?formkey=%s" % formkey
+        self.form_url = url
         self.formkey = ''
         self.action_url = ''
         self.parameters = {}
         self.labels = {}
         try:
-            d = pq(url=form_url)
+            d = pq(url=self.form_url)
         except:
             raise GFormException("""
 

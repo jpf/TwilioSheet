@@ -25,7 +25,7 @@ def mock_urlopen(action_url, parameters):
     return MockUrllib()
 
 
-def mock_init(self, string):
+def mock_init(self, string, url=None):
     return None
 
 
