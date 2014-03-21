@@ -52,3 +52,7 @@ class TestURLTest(unittest.TestCase):
               'viewform?formkey=dG02c3hqdEZBaWZMN1NBdnBCZkVzdWc6MQ'
         form = TestURL(url)
         self.assertIsInstance(form.parameters, set)
+    def test_detects_valid_2013_url(self):
+        url = 'https://docs.google.com/forms/d/1TLHCRZWsLt7huSzqlLoqA0MIHYT9n5xZRo4bRSotvlw/viewform'
+        form = TestURL(url)
+        self.assertIsInstance(form.parameters, set)

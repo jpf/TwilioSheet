@@ -44,6 +44,8 @@ class TestURL:
         self.message = ""
         self.url = url
         parsed_url = urlparse.urlparse(url)
+        formkey = None
+        formurl = None
         if not "http" in parsed_url.scheme:
             raise NoURLException("No input, expected URL.")
         if not "google.com" in parsed_url.netloc:
@@ -54,21 +56,30 @@ class TestURL:
             message = "URL appears to be for a spreadsheet, " \
                       "URL must be for a form."
             raise URLForGoogleSpreadsheetNotFormException(message)
-        if not query or not 'formkey' in query:
+        parts = parsed_url.path.split('/')
+        if '/'.join(parts[:3]) == '/forms/d':
+          formkey = parts.pop()
+          if formkey == 'viewform':
+            formkey = parts.pop()
+          formurl = 'https://docs.google.com/forms/d/%s/viewform' % formkey
+        if not formkey and (not query or not 'formkey' in query):
             message = "Input URL must contain 'formkey' query parameter."
             raise URLNotForGoogleFormException(message)
-        self.formkey = query['formkey'][0]
+            formkey = query['formkey'][0]
+            formurl = "https://docs.google.com/spreadsheet/" \
+                       "viewform?formkey=%s" % formkey
+        self.formkey = formkey
         try:
-            gform = GForm(self.formkey)
-        except:
-            message = "Error form at URL, " \
-                      "does the URL exist and point to a form?"
-            raise GoogleFormDoesntExistException(message)
+            gform = GForm(self.formkey, formurl)
+        except Exception as e:
+            message = "Error form at URL <%s>, " \
+                      "does the URL exist and point to a form? %s"
+            raise GoogleFormDoesntExistException(message % (formurl, e))
         intersection = twilio_parameters.intersection(gform.labels)
         if intersection == set():
             message = "Form at URL must contain at least " \
                       "one input with a label that matches a Twilio parameter."
-            raise NoTwilioParametersInFormException(message)
+            raise NoTwilioParametersInFormException(message % gform.labels)
         self.parameters = intersection
 
 
