@@ -38,16 +38,13 @@ Error parsing URL '%s', did you pass the correct formkey?""")
 
         form = d('#ss-form')
         # Define parameters with default values, if any
-        for item in d('#ss-form input'):
-            self.parameters[item.name] = item.value
         # Map out the label to form-input-name relationships
-        for item in d.find('div.ss-form-entry'):
-            elements = list(item)
-            if not elements[0].tag == 'label':
-                continue
-            input_label = elements[0].text.rstrip()
-            input_id = elements[2].name
-            self.labels[input_label] = input_id
+        for item in d('.ss-form-entry input'):
+            self.parameters[item.name] = item.value
+            input_label = item.get('aria-label')
+            if input_label:
+              input_id = item.get('name')
+              self.labels[input_label.strip( )] = input_id
         self.action_url = form.attr['action']
 
     def show_state(self):
